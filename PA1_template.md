@@ -1,0 +1,207 @@
+# Reproducible Research: Course Project-I  
+
+## Project Introduction
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+
+## About Data
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.  
+
+The data for this assignment can be downloaded from the course web site:        
+* **Dataset:** [Activity monitoring data    [52K]](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)  
+
+The variables included in this dataset are:<br>
+  1. **steps:** Number of steps taking in a 5-minute interval (missing values are coded as **NA**)  
+  2. **date:** The date on which the measurement was taken in YYYY-MM-DD format  
+  3. **interval:** Identifier for the 5-minute interval in which measurement was taken  
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.  
+
+## Project Setup
+
+```{r global_options}
+# Global options to set the visiblity of code and its corresponding output
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Loading packages required for this project
+```{r libraries, message=FALSE, warning=FALSE}
+# Loading the libraries
+library(knitr)
+library(dplyr)
+library(ggplot2)
+```
+### Setting the Work Directory
+```{r workspace}
+# Setting the Workspace
+setwd("~DataScience-by-John-Hopkins-University\\5-Reproducible Research\\Week2\\Project2")
+```
+## Loading the Dataset
+```{r reading_data}
+#Reading the .csv file
+activities <- read.csv(file = "activity.csv",header = TRUE)
+```
+### Viewing Data and Summary
+```{r summary}
+# Starting rows of data set
+head(activities)
+# Structure of data set
+str(activities)
+# Summary of data set
+summary(activities)
+```
+## Preprocessing the Data
+```{r preprocessing}
+#Removing the 'NA' Values
+activities <- na.omit(activities)
+```
+## Total number of steps taken per day
+```{r sum_of_steps}
+# Finding the sum of steps for each day
+stepstaken <- aggregate(steps~date,activities,sum)
+# Drawing the histogram
+hist(stepstaken$steps,xlab="Total number of steps taken",main="Histogram of the total number of steps taken each day")
+```
+```{r closing graphics, message=FALSE, warning=FALSE, include=FALSE}
+dev.off()
+```
+### Mean of total number of steps taken per day
+```{r mean_of_steps}
+# Finding the mean of steps for each day
+meansteps <- aggregate(steps~date,activities,mean)
+# Assigning the Labels
+names(meansteps) <- c("Date","Mean of total number of steps taken")
+meansteps
+```
+### Median of total number of steps taken per day
+```{r median_of_steps}
+# Finding the median of steps for each day
+mediansteps <- aggregate(steps~date,activities,median)
+# Assigning the Labels
+names(mediansteps) <- c("Date","Median of total number of steps taken")
+mediansteps
+```
+### Summary of mean and median number of steps taken per day
+```{r summary_mean_median}
+summary(meansteps)
+summary(mediansteps)
+```
+## Average daily activity pattern
+```{r activity_pattern}
+# Finding the average number of steps based on time interval
+stepsinterval <- aggregate(steps~interval,activities,mean)
+# Plotting the time series plot
+plot(stepsinterval$interval,stepsinterval$steps,type = "l",xlab = "Interval",ylab = "Average of steps taken",main ="Time series plot of the average number of steps taken")
+```
+```{r closing_graphics2, message=FALSE, warning=FALSE, include=FALSE}
+dev.off()
+```
+### 5-minute time interval which contains the maximum number of steps on average across all the days
+```{r max_steps}
+# Finding the maximum number steps
+maxsteps <- max(stepsinterval$steps)
+# Subsetting and finding the interval
+subset(stepsinterval,steps==maxsteps)
+```
+**The interval 835 has the maximum average value of steps i.e 206.1698**
+```{r empty_block1}
+```
+## Imputing missing values
+### Total number of missing values in the dataset 
+```{r missing_values}
+# Reading the Data
+activities <- read.csv(file = "activity.csv",header = TRUE)
+# Finding the number of missing values
+nrow(activities[is.na(activities),])
+```
+**Total number of rows with NA’s is 2304.**
+```{r empty_block2}
+```
+### Mean for 5-minute interval is the strategy for filling missing values in the dataset
+```{r filling}
+# Function to replace all the missing values with mean for 5-minute interval
+fillNA <- function()
+{
+  # Reading the .csv file
+  df <- read.csv(file = "activity.csv", header = TRUE)
+  # Mean of steps in various time intervals
+  si <- aggregate(steps ~ interval, df, mean)
+  temp = 0
+  # Replacing the 'NA' values with mean of time intervals
+  for (i in seq_along(df$steps)) {
+    status <- is.na(df$steps[i])
+    if (status)
+    {
+      temp = df$interval[i]
+      a <- subset(si, interval == temp)
+      df$steps[i] = a$steps
+    }
+  }
+  df
+}
+```
+### Invoking the function to impute 'NA' values
+```{r function_call}
+# Function call
+imputedData <- fillNA()
+# First few rows of new data set
+head(imputedData)
+# Summary of new data set
+summary(imputedData)
+```
+### Plotting the histogram using imputed data
+```{r sum_steps_imputed_data}
+# Finding the sum of steps in imputed data set
+imputedsteps <- aggregate(steps~date,imputedData,sum)
+# Plotting the graph
+hist(imputedsteps$steps,xlab="Total number of steps taken",main="Histogram of the total number of steps taken each day(imputed)")
+```
+```{r closing_graphics3, message=FALSE, warning=FALSE, include=FALSE}
+dev.off()
+```
+### Mean of total number of steps taken per day in imputed data
+```{r meansteps_imputed_data}
+# Finding the mean of steps for each day in imputed data
+imputedmean <- aggregate(steps~date,imputedData,mean)
+# Assigning the labels
+names(meansteps) <- c("Date","Mean of total number of steps taken(imputed)")
+imputedmean
+```
+### Median of total number of steps taken per day in imputed data
+```{r mediansteps_imputed_data}
+# Finding the median of steps for each day in imputed data
+imputedmedian <- aggregate(steps~date,imputedData,median)
+# Assigning the labels
+names(mediansteps) <- c("Date","Median of total number of steps taken(imputed)")
+imputedmedian
+```
+### Summary of mean and median number of steps taken per day
+```{r summary_mean_median_imputeddata}
+summary(imputedmean)
+summary(imputedmedian)
+```
+**Mean values stays the same but there is slight difference in median value.**  
+```{r empty_block3}
+```
+## Differences in activity patterns between weekdays and weekends  
+### Adding factor variable to find weekdays and weekends
+```{r creating_factor_variable}
+# Assigning the imputed dataset
+newData <- imputedData
+# convert to date variable
+newData$date <- as.Date(newData$date)
+#create a vector of weekdays
+weekend_list <- c('Saturday', 'Sunday')
+#Use %in% and weekdays to create a logical vector
+#convert to factor and specify the levels/labels
+newData$days <- factor((weekdays(newData$date) %in% weekend_list), 
+         levels=c(FALSE, TRUE), labels=c('weekday', 'weekend'))
+# Finding the average number of steps
+newinterval <- aggregate(steps~interval+days,newData,mean)
+```
+### Panel plot of average number of steps in weekdays and weekends 
+```{r panel_plot}
+# Adding labels for the facets
+weeklabels <- c('weekend' = "Weekends", 'weekday' = "Weekdays")
+# Drawing graph using ggplot2 package
+ggplot(data = newinterval,aes(x = interval, y = steps))+geom_line(size=0.75)+facet_grid(days~.,labeller = as_labeller(weeklabels))+xlab("Interval")+ylab("Average of steps taken")
+```
