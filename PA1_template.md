@@ -61,7 +61,7 @@ stepstaken <- aggregate(steps~date,activities,sum)
 # Drawing the histogram
 hist(stepstaken$steps,xlab="Total number of steps taken",main="Histogram of the total number of steps taken each day")
 ```
-![](Instructions_fig/plot1.png)<!-- -->
+![](instructions_fig/plot1.png)<!-- -->
 ```{r closing graphics, message=FALSE, warning=FALSE, include=FALSE}
 dev.off()
 ```
@@ -93,7 +93,7 @@ stepsinterval <- aggregate(steps~interval,activities,mean)
 # Plotting the time series plot
 plot(stepsinterval$interval,stepsinterval$steps,type = "l",xlab = "Interval",ylab = "Average of steps taken",main ="Time series plot of the average number of steps taken")
 ```
-![](Instructions_fig/plot2.png)<!-- -->
+![](instructions_fig/plot2.png)<!-- -->
 ```{r closing_graphics2, message=FALSE, warning=FALSE, include=FALSE}
 dev.off()
 ```
@@ -157,7 +157,7 @@ imputedsteps <- aggregate(steps~date,imputedData,sum)
 # Plotting the graph
 hist(imputedsteps$steps,xlab="Total number of steps taken",main="Histogram of the total number of steps taken each day(imputed)")
 ```
-![](Instructions_fig/plot3.png)<!-- -->
+![](instructions_fig/plot3.png)<!-- -->
 ```{r closing_graphics3, message=FALSE, warning=FALSE, include=FALSE}
 dev.off()
 ```
@@ -208,4 +208,4 @@ weeklabels <- c('weekend' = "Weekends", 'weekday' = "Weekdays")
 # Drawing graph using ggplot2 package
 ggplot(data = newinterval,aes(x = interval, y = steps))+geom_line(size=0.75)+facet_grid(days~.,labeller = as_labeller(weeklabels))+xlab("Interval")+ylab("Average of steps taken")
 ```
-![](Instructions_fig/plot4.png)<!-- -->
+![](instructions_fig/plot4.png)<!-- -->
