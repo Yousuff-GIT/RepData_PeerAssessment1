@@ -261,8 +261,7 @@ subset(stepsinterval,steps==maxsteps)
 ## 104      835 206.1698
 ```
 **The interval 835 has the maximum average value of steps i.e 206.1698**
-```{r empty_block1}
-```
+
 ## Imputing missing values
 ### Total number of missing values in the dataset 
 ```{r missing_values}
@@ -275,8 +274,7 @@ nrow(activities[is.na(activities),])
 ## [1] 2304
 ```
 **Total number of rows with NA’s is 2304.**
-```{r empty_block2}
-```
+
 ### Mean for 5-minute interval is the strategy for filling missing values in the dataset
 ```{r filling}
 # Function to replace all the missing values with mean for 5-minute interval
@@ -509,8 +507,7 @@ summary(imputedmedian)
 ##  (Other)   :55
 ```
 **Mean values stays the same but there is slight difference in median value.**  
-```{r empty_block3}
-```
+
 ## Differences in activity patterns between weekdays and weekends  
 ### Adding factor variable to find weekdays and weekends
 ```{r creating_factor_variable}
